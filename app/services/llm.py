@@ -2,8 +2,10 @@ import httpx
 
 import os
 
-OLLAMA_URL = os.getenv("OLLAMA_URL")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
+OLLAMA_MODEL = os.getenv(
+    "OLLAMA_MODEL", "llama3.2"
+)  # swap for llama3, gemma, etc. — whatever you have pulled
 
 
 def build_prompt(question: str, context_chunks: list[str]) -> str:
