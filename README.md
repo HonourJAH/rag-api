@@ -43,9 +43,13 @@ GET  /health      →  health check
 
 ```
 rag-api/
+├── .github/
+│   └── workflows/
+│       └── ci.yml                 — GitHub Actions CI pipeline
 ├── app/
 │   ├── __init__.py
 │   ├── main.py                    — FastAPI app and route handlers
+│   ├── schema.py                  — Request and response schemas
 │   └── services/
 │       ├── __init__.py
 │       ├── embeddings.py          — sentence-transformer embedding model
@@ -55,8 +59,13 @@ rag-api/
 ├── test/
 │   ├── __init__.py
 │   └── test_main.py               — full test suite (70 tests)
-├── requirements.txt
-└── README.md
+├── .dockerignore
+├── .env
+├── .gitignore
+├── docker-compose.yml
+├── Dockerfile
+├── README.md
+└── requirements.txt
 ```
 
 ---
