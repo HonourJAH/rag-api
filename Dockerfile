@@ -8,7 +8,14 @@ WORKDIR /app
 
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+RUN pip install --no-cache-dir --prefix=/install \
+    --timeout=300 \
+    torch --index-url https://download.pytorch.org/whl/cpu
+
+RUN pip install --no-cache-dir --prefix=/install \
+    --timeout=300 \
+    -r requirements.txt
+
 
 # Pre-download the sentence-transformer model into the image
 # so containers start instantly without downloading 90MB on first request
@@ -26,13 +33,14 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 RUN groupadd --gid 1001 appgroup && \
-    useradd --uid 1001 --gid appgroup --no-create-home appuser
+    useradd --uid 1001 --gid appgroup --create-home appuser
 
 COPY --from=builder /install /usr/local
 
 # Copy the sentence-transformer model cache from builder
 # ~/.cache/huggingface is where sentence-transformers stores downloaded models
-COPY --from=builder /root/.cache /root/.cache
+COPY --from=builder /root/.cache /home/appuser/.cache
+RUN chown -R appuser:appgroup /home/appuser/.cache
 
 COPY app/ ./app/
 
@@ -43,4 +51,4 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
