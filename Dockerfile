@@ -16,12 +16,17 @@ RUN pip install --no-cache-dir --prefix=/install \
     --timeout=300 \
     -r requirements.txt
 
+ENV HF_HOME=/app/.cache/huggingface
+
 
 # Pre-download the sentence-transformer model into the image
 # so containers start instantly without downloading 90MB on first request
-RUN python3 -c \
+RUN for i in 1 2 3; do \
+    python3 -c \
     "from sentence_transformers import SentenceTransformer; \
-    SentenceTransformer('all-MiniLM-L6-v2')"
+    SentenceTransformer('all-MiniLM-L6-v2')" \
+    && break || (echo "Attempt $i failed, retrying in 15s..." && sleep 15); \
+    done
 
 
 # ─── Stage 2: Runtime ─────────────────────────────────────────────────────────
@@ -39,7 +44,8 @@ COPY --from=builder /install /usr/local
 
 # Copy the sentence-transformer model cache from builder
 # ~/.cache/huggingface is where sentence-transformers stores downloaded models
-COPY --from=builder /root/.cache /home/appuser/.cache
+
+COPY --from=builder /app/.cache /home/appuser/.cache
 RUN chown -R appuser:appgroup /home/appuser/.cache
 
 COPY app/ ./app/
