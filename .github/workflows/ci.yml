@@ -102,7 +102,7 @@ jobs:
             rag-api:latest
 
       - name: Wait for API to start
-        run: sleep 15
+        run: sleep 60
 
       - name: Check container is running
         run: docker ps | grep rag-api
