@@ -80,7 +80,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: false           # don't push — just verify it builds correctly
+          push: false
+          load: true              # don't push — just verify it builds correctly
           tags: rag-api:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
