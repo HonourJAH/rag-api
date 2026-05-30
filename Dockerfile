@@ -31,6 +31,8 @@ RUN groupadd --gid 1001 appgroup && \
 COPY --from=builder /install /usr/local
 
 COPY app/ ./app/
+COPY start.sh .
+RUN chmod +x start.sh
 
 USER appuser
 
